@@ -1,18 +1,18 @@
 (function() {
   const mediaName = 'Neon Genesis Evangelion'; // Works for Roman/Latin-alphabet-based languages only
   const audioBaseURL = 'https://inobtenio.dev/projects/the-ending-of-evangelion/audio/mp3/';
-  let episodeNumber, audio, video;
+  let episodeNumber, episodeData, audio, video;
 
   const playProperEndingTheme = function() {
-      if (watchingEvangelion()) {
-        episodeNumber = findEpNumber();
-        video = document.querySelector('video');
-        audio = audio || new Audio(`${audioBaseURL}${episodeNumber}.mp3`);
+    if (watchingEvangelion()) {
+      episodeNumber = getEpisodeNumber();
+      video = document.querySelector('video');
+      audio = audio || new Audio(`${audioBaseURL}${episodeNumber}.mp3`);
 
-        if (audio && video) replaceEnding();
-      } else {
-        forgetAudioAndEpisode();
-      }
+      if (audio && video) replaceEnding();
+    } else {
+      forgetAudioAndEpisode();
+    }
   }
 
   const watchingEvangelion = function() {
@@ -22,47 +22,47 @@
             document.querySelector('.ellipsize-text').textContent.indexOf(mediaName) != -1;
   }
 
-  const findEpNumber = function() {
+  const getEpisodeNumber = function() {
     return parseInt(document.getElementsByClassName('ellipsize-text')[0].children[1].textContent.substring(4,6));
   }
 
   const replaceEnding = function() {
-    const episodeData = EPISODES[episodeNumber];
-      if (containedIn(video.currentTime, episodeData['mutedBetween'])) {
-        video.muted = true;
-        audio.volume = video.volume;
+    episodeData = EPISODES[episodeNumber];
+    if (between(video.currentTime, episodeData['muteBetween'])) {
+      audio.volume = video.volume;
+      video.muted = true;
 
-        video.onplay = function() {
-          if (audio) audio.play();
-        };
+      video.onplay = function() {
+        if (audio) audio.play();
+      };
 
-        video.onpause = function() {
-          if (audio) audio.pause();
-        };
+      video.onpause = function() {
+        if (audio) audio.pause();
+      };
 
-        video.onseeked = function() {
-          seekAudio(episodeData['endingStart']);
-        }
-
-        if (video.currentTime >= episodeData['endingStart']) {
-          if (!endingPlaying) audio.play();
-          endingPlaying = true;
-        }
-      } else {
-        video.muted = false;
-        endingPlaying = false;
+      video.onseeked = function() {
+        seekAudio();
       }
+
+      if (video.currentTime >= episodeData['endingStart']) {
+        if (!endingPlaying) audio.play();
+        endingPlaying = true;
+      }
+    } else {
+      video.muted = false;
+      endingPlaying = false;
+    }
   }
 
-  const containedIn = function between(value, range) {
+  const between = function(value, range) {
     return value >= range[0] && value <= range[1];
   }
 
-  const seekAudio = function(endingStart) {
-    distance = video.currentTime - endingStart;
+  const seekAudio = function() {
+    const distance = video.currentTime - episodeData['endingStart'];
 
-    if (containedIn(distance, [0, audio.duration])) {
-      audio.currentTime = video.currentTime - endingStart;
+    if (between(distance, [0, audio.duration])) {
+      audio.currentTime = distance;
     } else {
       resetAudioPlayback();
     }
