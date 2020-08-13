@@ -1,6 +1,6 @@
 {
   "name": "The Ending of Evangelion",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "manifest_version": 2,
   "description": "Listen to the original Neon Genesis Evangelion endings on Netflix.",
   "default_locale": "en",
