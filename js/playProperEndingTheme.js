@@ -1,5 +1,5 @@
 (function() {
-  const mediaName = 'Neon Genesis Evangelion'; // Works for Roman/Latin-alphabet-based languages only
+  const videoIdRange = Array.from({length: 26}, (_, i) => 81033447+i); // 81033447 = video ID of Ep. #1
   const audioBaseURL = 'https://inobtenio.dev/projects/the-ending-of-evangelion/audio/mp3/';
   let episodeNumber, episodeData, audio, video;
   let previousURL = document.location.href;
@@ -16,11 +16,16 @@
     }
   }
 
+  const getVideoId = function() {
+    let playbackState = localStorage.NFPlaybackState || null;
+    return JSON.parse(playbackState)[JSON.parse(localStorage.MDX_PROFILEID).id].videoId;
+  }
+
   const watchingEvangelion = function() {
     return  document.location.href.indexOf('watch') != -1 &&
-            document.querySelector('.ellipsize-text') &&
-            !document.querySelector('.player-loading') &&
-            document.querySelector('.ellipsize-text').textContent.indexOf(mediaName) != -1;
+            !!document.querySelector('video') &&
+            !document.querySelector('video').paused &&
+            videoIdRange.includes(getVideoId());
   }
 
   const urlHasNotChanged = function() {
@@ -30,7 +35,7 @@
   }
 
   const getEpisodeNumber = function() {
-    return parseInt(document.getElementsByClassName('ellipsize-text')[0].children[1].textContent.substring(4,6));
+    return videoIdRange.indexOf(getVideoId()) + 1;
   }
 
   const replaceEnding = function() {
