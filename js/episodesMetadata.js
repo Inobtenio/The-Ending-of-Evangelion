@@ -8,8 +8,8 @@ const EPISODES = {
     endingStart: 1321.6
   },
   3: {
-    muteBetween: [1319.0, 1387.0],
-    endingStart: 1319.3
+    muteBetween: [1322.1, 1387.0],
+    endingStart: 1322.4
   },
   4: {
     muteBetween: [1321.5, 1387.0],
